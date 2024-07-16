@@ -47,7 +47,7 @@ const AddPost: React.FC = () => {
         onChange={(e) => setContent(e.target.value)}
         placeholder="Content"
         required />
-        <button type="submit">Add Post</button>
+        <button type="submit" disabled={isLoading}>{isLoading ? "Adding..." : "Add Post"}</button>
       </form>
       {/* Display success message */}
       {success && <p>Post added successfully!</p>}
