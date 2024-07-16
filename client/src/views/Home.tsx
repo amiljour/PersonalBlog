@@ -1,19 +1,27 @@
+// Importing necessary libraries
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+// Defining the Post interface to type the post data
 interface Post {
   id: number;
   title: string;
   content: string;
 }
 
+// Defining the Home component
 const Home: React.FC = () => {
+  // declaring a state variable to store the list of posts
   const [posts, setPosts] = useState<Post[]>([]);
 
+  // Fetching the list of posts from the API
   useEffect(() => {
     axios.get("My API URL here")
-      .then(response => (response.data))
+      .then(response => {
+        // setting the list of posts in the state variable
+        setPosts(response.data);
+      })
       .catch(error => console.error('Error fetching posts:', error));
   }, []);
 
@@ -21,6 +29,7 @@ const Home: React.FC = () => {
     <div>
       <h1>Posts</h1>
       <ul>
+        {/* Mapping over the posts to render each post as a list item */}
         {posts.map(post => (
           <li key={post.id}>
             <Link to={`/post/${post.id}`}>{post.title}</Link>
