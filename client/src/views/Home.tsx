@@ -22,6 +22,15 @@ const Home: React.FC = () => {
         // setting the list of posts in the state variable
         setPosts(response.data);
       })
+      // Check if response is an array before setting the state
+      .then(response => {
+        if (Array.isArray(response.data)) {
+          // Setting the fetched posts to the state
+          setPosts(response.data);
+        } else {
+          console.error('API response is not an array:', response.data);
+        }
+      })
       .catch(error => console.error('Error fetching posts:', error));
   }, []);
 
