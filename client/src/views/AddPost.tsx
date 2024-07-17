@@ -12,25 +12,26 @@ const AddPost: React.FC = () => {
   const [success, setSuccess] = useState(false);
 
   // Function to handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     setSuccess(false);
     const newPost = { title, content };
-    axios.post("http://MyAPIURL.com/posts", newPost)
-      .then(response => {
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await axios.post(`${apiUrl}/posts`, newPost);
       console.log('New post added:', response.data);
-      setIsLoading(false); 
-        setSuccess(true); 
-        setTitle(""); 
-        setContent(""); 
-      })
-      .catch(error => {
-        console.error('Error adding post:', error);
-        setIsLoading(false); 
-        setError('Error adding post');
-      });
+      setIsLoading(false);
+      setSuccess(true);
+      setTitle("");
+      setContent("");
+    } catch (error) {
+      console.error('Error adding post:', error);
+      setIsLoading(false);
+      setError('Error adding post');
+    }
   };
 
   return (
@@ -38,21 +39,24 @@ const AddPost: React.FC = () => {
       <h1>Add Post</h1>
       <form onSubmit={handleSubmit}>
         <input 
-        type="text" 
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title"
-        required />
-        <textarea value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Content"
-        required />
+          type="text" 
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          required
+        />
+        <textarea 
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Content"
+          required
+        />
         <button type="submit" disabled={isLoading}>{isLoading ? "Adding..." : "Add Post"}</button>
       </form>
       {/* Display success message */}
       {success && <p>Post added successfully!</p>}
-      {/* Display error message */
-      error && <p>{error}</p>}
+      {/* Display error message */}
+      {error && <p>{error}</p>}
       {/* Display loading message */}
       {isLoading && <p>Loading...</p>}
     </div>
