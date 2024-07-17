@@ -12,39 +12,54 @@ interface Post {
 
 // Defining the Home component
 const Home: React.FC = () => {
-  // declaring a state variable to store the list of posts
+  // Declaring state variables to store the list of posts and any error message
   const [posts, setPosts] = useState<Post[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetching the list of posts from the API
   useEffect(() => {
-    axios.get("My API URL here")
-      .then(response => {
-        // setting the list of posts in the state variable
-        setPosts(response.data);
-      })
-      // Check if response is an array before setting the state
-      .then(response => {
+    const fetchPosts = async () => {
+      try {
+        // Fetching the list of posts from the API
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`);
+        console.log("API response:", response.data);
+
+        // Checking if the data is an array
         if (Array.isArray(response.data)) {
-          // Setting the fetched posts to the state
+          // Setting the list of posts in the state
           setPosts(response.data);
-        } else {
-          console.error('API response is not an array:', response.data);
         }
-      })
-      .catch(error => console.error('Error fetching posts:', error));
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unknown error occurred");
+        }
+        console.error('Error fetching posts:', error);
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   return (
     <div>
       <h1>Posts</h1>
-      <ul>
-        {/* Mapping over the posts to render each post as a list item */}
-        {posts.map(post => (
-          <li key={post.id}>
-            <Link to={`/post/${post.id}`}>{post.title}</Link>
-          </li>
-        ))}
-      </ul>
+      {error ? (
+        <div>Error: {error}</div>
+      ) : (
+        <ul>
+          {posts.length > 0 ? (
+            posts.map(post => (
+              <li key={post.id}>
+                <Link to={`/post/${post.id}`}>{post.title}</Link>
+              </li>
+            ))
+          ) : (
+            <div>No posts available</div>
+          )}
+        </ul>
+      )}
       <Link to="/add-post">Add Post</Link>
     </div>
   );
